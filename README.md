@@ -8,4 +8,4 @@ Using JSON as the interface to transfer data is much easier than to use NMEA2000
 
 ![Display](https://github.com/AK-Homberger/M5Stack-Wifi-NMEA-Diaplay-JSON/blob/master/IMG_1149-1.jpg)
 
-Version 01.: 14.10.2019
+Version 0.1: 14.10.2019
