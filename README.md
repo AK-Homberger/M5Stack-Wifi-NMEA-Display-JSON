@@ -6,6 +6,10 @@ The include file BoatData.h and the JSON Identifiers should be the same as withi
 
 Using JSON as the interface to transfer data is much easier than to use NMEA2000 or NMEA0183 protocols for this topic.
 
+- With left two buttons you can select the different pages.
+- The right button is switching the brightness.
+- On/Off button works like standard of M5Stack.
+
 ![Display](https://github.com/AK-Homberger/M5Stack-Wifi-NMEA-Diaplay-JSON/blob/master/IMG_1149-1.jpg)
 
 Version 0.1: 14.10.2019
