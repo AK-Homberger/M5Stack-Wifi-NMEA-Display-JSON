@@ -3,7 +3,7 @@
   Reads JSON Data from NMEA 200 Wifi Gatway and displays is on the M5Stack module
   Data will be stored in BoatData struct.
 
-  Version 0.1 / 14.10.2017 
+  Version 0.2 / 17.10.2017
 */
 
 
@@ -19,7 +19,7 @@
 
 
 WiFiMulti WiFiMulti;
-int port = 90; // JSON Server port of NMEA Gateway
+int port = 90; // JSON Server port of NMEA 2000 Gateway
 const char * host = "192.168.15.1"; // Server IP
 
 WiFiClient client;  // Create TCP client
@@ -84,17 +84,17 @@ void Get_JSON_Data(void * parameter) {
   // Allocate JsonBuffer
   // Use arduinojson.org/assistant to compute the capacity.
 
-  DynamicJsonBuffer jsonBuffer(500);
-  
+  DynamicJsonBuffer jsonBuffer(800);
+
   WiFiClient client;
   client.setTimeout(1000);
-  
+
   while (true) {
 
     // Serial.println(F("Connecting..."));
 
     // Connect to HTTP server
-    
+
     if (!client.connect("192.168.15.1", 90)) {
       Serial.println(F("Connection failed"));
       return;
@@ -127,7 +127,7 @@ void Get_JSON_Data(void * parameter) {
       return;
     }
 
-    
+
     // Parse JSON object
     JsonObject& root = jsonBuffer.parseObject(client);
     if (!root.success()) {
@@ -318,22 +318,40 @@ void Page_3(void) {
 
 void Page_2(void) {
   char buffer[40];
+  double minutes;
 
   M5.Lcd.fillRect(0, 31, 320, 178, 0x439);
-  M5.Lcd.setCursor(0, 45, 2);
+  M5.Lcd.setCursor(0, 40, 2);
+  M5.Lcd.setTextSize(2);
+
+  minutes = BoatData.Latitude - trunc(BoatData.Latitude);
+  minutes = minutes / 100 * 60;
+
+  M5.Lcd.println("LAT");
   M5.Lcd.setTextSize(3);
-  sprintf(buffer, " LAT %02.4f", BoatData.Latitude);
+  sprintf(buffer, "   %02.0f", trunc(BoatData.Latitude));
   M5.Lcd.print(buffer);
   M5.Lcd.setTextSize(1);
-  M5.Lcd.print(" o");
+  M5.Lcd.print("o ");
   M5.Lcd.setTextSize(3);
-  M5.Lcd.println(" ");
-  sprintf(buffer, " LON %03.4f", BoatData.Longitude);
+  sprintf(buffer, "%06.3f", minutes * 100);
+  M5.Lcd.print(buffer);
+  if (BoatData.Latitude > 0 ) M5.Lcd.println("'N"); else M5.Lcd.println("'S");
+
+  minutes = BoatData.Longitude - trunc(BoatData.Longitude);
+  minutes = minutes / 100 * 60;
+
+  M5.Lcd.setTextSize(2);
+  M5.Lcd.println("LON");
+  M5.Lcd.setTextSize(3);
+  sprintf(buffer, "  %03.0f", trunc(BoatData.Longitude));
   M5.Lcd.print(buffer);
   M5.Lcd.setTextSize(1);
-  M5.Lcd.print(" o");
+  M5.Lcd.print("o ");
   M5.Lcd.setTextSize(3);
-  M5.Lcd.println(" ");
+  sprintf(buffer, "%06.3f", minutes * 100);
+  M5.Lcd.print(buffer);
+  if (BoatData.Longitude > 0 ) M5.Lcd.println("'E"); else M5.Lcd.println("'W");
 }
 
 void Page_1(void) {
