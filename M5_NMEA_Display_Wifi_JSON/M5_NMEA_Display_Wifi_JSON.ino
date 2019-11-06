@@ -37,6 +37,8 @@ int LCD_Brightness = 250;
 long MyTime = 0;  // System Time from NMEA2000
 bool TimeSet = false;
 
+double FridgeTemperature = 0;
+double BatteryVoltage = 0;
 
 void setup() {
   M5.begin();
