@@ -10,6 +10,9 @@ Using JSON as the interface to transfer data is much easier than to use NMEA2000
 - The right button is switching the brightness.
 - On/Off button works like standard of M5Stack.
 
+For the M5Stack the Board Software has to be installed: https://docs.m5stack.com/#/en/arduino/arduino_home_page
+In addition the ArduinoJson library has to be installed with the Arduiono IDE Library Manager.
+
 ![Display1](https://github.com/AK-Homberger/M5Stack-Wifi-NMEA-Diaplay-JSON/blob/master/IMG_1149-1.jpg)
 
 ![Display2](https://github.com/AK-Homberger/M5Stack-Wifi-NMEA-Display-JSON/blob/master/IMG_1150.jpg)
