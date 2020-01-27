@@ -102,7 +102,7 @@ void Get_JSON_Data() {
 
     // Connect to HTTP server
 
-    if (!client.connect(host, 90)) {
+    if (!client.connect(host, port)) {
       Serial.println(F("Connection failed"));
       return;
     }
