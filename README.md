@@ -17,6 +17,8 @@ In addition the ArduinoJson library has to be installed with the Arduiono IDE Li
 
 ![Display2](https://github.com/AK-Homberger/M5Stack-Wifi-NMEA-Display-JSON/blob/master/IMG_1150.jpg)
 
+Version 0.3: 27.01.2020 - Static JSON buffer. And non-return task for second core (to avoid re-starts in case of JSON errors). 
+
 Version 0.2: 17.10.2019 - Increasd JSON buffer to 800 and changed position format to "00°00.000X".
 
 Version 0.1: 14.10.2019
