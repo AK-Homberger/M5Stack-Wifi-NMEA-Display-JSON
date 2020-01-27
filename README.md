@@ -17,7 +17,7 @@ In addition the ArduinoJson library has to be installed with the Arduiono IDE Li
 
 ![Display2](https://github.com/AK-Homberger/M5Stack-Wifi-NMEA-Display-JSON/blob/master/IMG_1150.jpg)
 
-Version 0.4: 27.01.2020 - Added WiFi recconnect. Or restart if reconnect is not working.
+Version 0.4: 27.01.2020 - Added WiFi reconnect. Or restart if reconnect is not working.
 
 Version 0.3: 27.01.2020 - Static JSON buffer. And non-return task for second core (to avoid re-starts in case of JSON errors). 
 
