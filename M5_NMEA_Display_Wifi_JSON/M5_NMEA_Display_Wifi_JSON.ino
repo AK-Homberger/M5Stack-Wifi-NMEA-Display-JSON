@@ -1,13 +1,12 @@
 /*
   Demo: NMEA -> M5Stack display
-  Reads JSON Data from NMEA 200 Wifi Gatway and displays is on the M5Stack module
+  Reads JSON Data from NMEA 2000 Wifi Gatway and displays is on the M5Stack module
   Data will be stored in BoatData struct.
-
-  Version 0.2 / 17.10.2017
+  Version 0.3 / 27.01.2020
 */
 
 
-#include <Arduino.h>
+//#include <Arduino.h>
 #include <M5Stack.h>
 #include <Time.h>
 #include <sys/time.h>
@@ -40,6 +39,7 @@ bool TimeSet = false;
 double FridgeTemperature = 0;
 double BatteryVoltage = 0;
 
+
 void setup() {
   M5.begin();
   M5.Power.begin();
@@ -50,7 +50,7 @@ void setup() {
   Serial.begin(115200); delay(500);
 
   M5.Lcd.setTextSize(2);
-  WiFiMulti.addAP("MyESP32", "password");
+  WiFiMulti.addAP("MyESP32", "ijsselmeer");
 
   M5.Lcd.print("Waiting for WiFi. ");
 
@@ -68,7 +68,7 @@ void setup() {
 
   // Create task for core 0, loop() runs on core 1
   xTaskCreatePinnedToCore(
-    Get_JSON_Data, /* Function to implement the task */
+    Get_JSON_DataTask, /* Function to implement the task */
     "Task1", /* Name of the task */
     10000,  /* Stack size in words */
     NULL,  /* Task input parameter */
@@ -77,13 +77,21 @@ void setup() {
     0); /* Core where the task should run */
 }
 
+void Get_JSON_DataTask(void * parameter) {
 
-void Get_JSON_Data(void * parameter) {
+  while (true) {
+    Get_JSON_Data();
+    delay(1000);
+  }
+}
+
+
+void Get_JSON_Data() {
 
   // Allocate JsonBuffer
   // Use arduinojson.org/assistant to compute the capacity.
 
-  DynamicJsonBuffer jsonBuffer(800);
+  StaticJsonBuffer<1000> jsonBuffer ;
 
   WiFiClient client;
   client.setTimeout(1000);
@@ -94,7 +102,7 @@ void Get_JSON_Data(void * parameter) {
 
     // Connect to HTTP server
 
-    if (!client.connect("192.168.15.1", 90)) {
+    if (!client.connect(host, 90)) {
       Serial.println(F("Connection failed"));
       return;
     }
@@ -163,8 +171,6 @@ void Get_JSON_Data(void * parameter) {
 
     // Disconnect
     client.stop();
-    jsonBuffer.clear();
-    delay(1000);
   }
 }
 
