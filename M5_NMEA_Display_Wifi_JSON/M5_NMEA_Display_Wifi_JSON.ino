@@ -2,11 +2,11 @@
   Demo: NMEA -> M5Stack display
   Reads JSON Data from NMEA 2000 Wifi Gatway and displays is on the M5Stack module
   Data will be stored in BoatData struct.
-  Version 0.4 / 27.01.2020
+  Version 0.5 / 23.07.2020
 */
 
 
-//#include <Arduino.h>
+#include <Arduino.h>
 #include <M5Stack.h>
 #include <Time.h>
 #include <sys/time.h>
@@ -50,7 +50,7 @@ void setup() {
   Serial.begin(115200); delay(500);
 
   M5.Lcd.setTextSize(2);
-  WiFiMulti.addAP("MyESP32", "ijsselmeer");
+  WiFiMulti.addAP("MyESP32", "password");
 
   M5.Lcd.print("Waiting for WiFi. ");
 
@@ -68,30 +68,34 @@ void setup() {
 
   // Create task for core 0, loop() runs on core 1
   xTaskCreatePinnedToCore(
-    Get_JSON_DataTask, /* Function to implement the task */
+    Get_JSON_Data_Task, /* Function to implement the task */
     "Task1", /* Name of the task */
     10000,  /* Stack size in words */
     NULL,  /* Task input parameter */
-    2,  /* Priority of the task */
+    0,  /* Priority of the task */
     &Task1,  /* Task handle. */
     0); /* Core where the task should run */
 }
 
-void Get_JSON_DataTask(void * parameter) {
+unsigned long update_time = 0;
 
+void Get_JSON_Data_Task(void * parameter) {
   while (true) {
-    Get_JSON_Data();
-    delay(1000);
+
+    if (millis() > update_time + 1000) {
+      Get_JSON_Data();
+      update_time = millis();
+    }
   }
 }
 
 
-void Get_JSON_Data() {
+void Get_JSON_Data(void) {
 
   // Allocate JsonBuffer
   // Use arduinojson.org/assistant to compute the capacity.
 
-  StaticJsonBuffer<1000> jsonBuffer ;
+  StaticJsonDocument<800> root;
 
   WiFiClient client;
   client.setTimeout(1000);
@@ -100,7 +104,7 @@ void Get_JSON_Data() {
 
   // Connect to HTTP server
 
-  if (!client.connect(host, 90)) {
+  if (!client.connect("192.168.15.1", 90)) {
     Serial.println(F("Connection failed"));
     return;
   }
@@ -134,8 +138,9 @@ void Get_JSON_Data() {
 
 
   // Parse JSON object
-  JsonObject& root = jsonBuffer.parseObject(client);
-  if (!root.success()) {
+  DeserializationError error = deserializeJson(root, client);
+
+  if (error) {
     Serial.println(F("Parsing failed!"));
     return;
   }
@@ -143,32 +148,32 @@ void Get_JSON_Data() {
   // Extract values
 
   BoatData.Latitude = root["Latitude"] ;
-  BoatData.Longitude = root["Longitude"];
-  BoatData.Heading = root["Heading"];
-  BoatData.COG = root["COG"];
-  BoatData.SOG = root["SOG"];
-  BoatData.STW = root["STW"];
-  BoatData.AWS = root["AWS"];
-  BoatData.TWS = root["TWS"];
-  BoatData.MaxAws = root["MaxAws"];
-  BoatData.MaxTws = root["MaxTws"];
-  BoatData.AWA = root["AWA"];
-  BoatData.TWA = root["TWA"];
-  BoatData.TWD = root["TWD"];
-  BoatData.TripLog = root["TripLog"];
-  BoatData.Log = root["Log"];
-  BoatData.RudderPosition = root["RudderPosition"];
-  BoatData.WaterTemperature = root["WaterTemperature"];
-  BoatData.WaterDepth = root["WaterDepth"];
-  BoatData.Variation = root["Variation"];
-  BoatData.Altitude = root["Altitude"];
-  BoatData.GPSTime = root["GPSTime"];
-  BoatData.DaysSince1970 = root["DaysSince1970"];
-  FridgeTemperature = root["FridgeTeperature"];
-  BatteryVoltage = root["BatteryVoltage"];
+                      BoatData.Longitude = root["Longitude"];
+                      BoatData.Heading = root["Heading"];
+                      BoatData.COG = root["COG"];
+                      BoatData.SOG = root["SOG"];
+                      BoatData.STW = root["STW"];
+                      BoatData.AWS = root["AWS"];
+                      BoatData.TWS = root["TWS"];
+                      BoatData.MaxAws = root["MaxAws"];
+                      BoatData.MaxTws = root["MaxTws"];
+                      BoatData.AWA = root["AWA"];
+                      BoatData.TWA = root["TWA"];
+                      BoatData.TWD = root["TWD"];
+                      BoatData.TripLog = root["TripLog"];
+                      BoatData.Log = root["Log"];
+                      BoatData.RudderPosition = root["RudderPosition"];
+                      BoatData.WaterTemperature = root["WaterTemperature"];
+                      BoatData.WaterDepth = root["WaterDepth"];
+                      BoatData.Variation = root["Variation"];
+                      BoatData.Altitude = root["Altitude"];
+                      BoatData.GPSTime = root["GPSTime"];
+                      BoatData.DaysSince1970 = root["DaysSince1970"];
+                      FridgeTemperature = root["FridgeTeperature"];
+                      BatteryVoltage = root["BatteryVoltage"];
 
-  // Disconnect
-  client.stop();
+                      // Disconnect
+                      client.stop();
 }
 
 
@@ -186,20 +191,6 @@ void set_system_time(void) {
 
 
 void loop() {
-  int wifi_retry = 0;
-
-  while (WiFi.status() != WL_CONNECTED && wifi_retry < 5 ) {
-    wifi_retry++;
-    WiFi.disconnect();
-    WiFi.mode(WIFI_OFF);
-    WiFi.mode(WIFI_STA);
-    WiFiMulti.addAP("MyESP32", "ijsselmeer");
-    delay(100);
-  }
-  if (wifi_retry >= 5) {
-    ESP.restart();
-  }
-
   M5.update();
 
   if (millis() > t + 1000) {
@@ -263,8 +254,8 @@ void Page_6(void) {
   M5.Lcd.print(" o ");
   M5.Lcd.setTextSize(3);
   M5.Lcd.println("C ");
-  sprintf(buffer, " ALT %2.1f m", BoatData.Altitude);
-  M5.Lcd.println(buffer);
+  //  sprintf(buffer, " ALT %2.1f m", BoatData.Altitude);
+  //  M5.Lcd.println(buffer);
 }
 
 
