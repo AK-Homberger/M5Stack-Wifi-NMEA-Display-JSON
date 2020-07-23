@@ -11,7 +11,7 @@ Using JSON as the interface to transfer data is much easier than to use NMEA2000
 - On/Off button works like standard of M5Stack.
 
 For the M5Stack the Board Software has to be installed: https://docs.m5stack.com/#/en/arduino/arduino_home_page
-In addition the ArduinoJson library has to be installed with the Arduiono IDE Library Manager.
+In addition the ArduinoJson library (please use version 5.13.5) has to be installed with the Arduiono IDE Library Manager.
 
 ![Display1](https://github.com/AK-Homberger/M5Stack-Wifi-NMEA-Diaplay-JSON/blob/master/IMG_1149-1.jpg)
 
