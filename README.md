@@ -19,7 +19,7 @@ In addition the ArduinoJson library (please use version 6.x.x) has to be install
 
 # Updates:
 
-Version 0.5: 23.07.2020 - Moveed to new JSON library.
+Version 0.5: 23.07.2020 - Moved to new JSON library.
 
 Version 0.4: 27.01.2020 - Added WiFi reconnect. Or restart if reconnect is not working.
 
