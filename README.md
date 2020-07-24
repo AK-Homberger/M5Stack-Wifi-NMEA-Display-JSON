@@ -18,6 +18,7 @@ In addition the ArduinoJson library (please use version 6.x.x) has to be install
 ![Display2](https://github.com/AK-Homberger/M5Stack-Wifi-NMEA-Display-JSON/blob/master/IMG_1150.jpg)
 
 # Updates:
+Version 0.6: 24.07.2020 - Added WiFi reconnect (again).
 
 Version 0.5: 23.07.2020 - Moved to new JSON library.
 
