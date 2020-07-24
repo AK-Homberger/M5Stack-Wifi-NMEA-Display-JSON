@@ -2,7 +2,7 @@
   Demo: NMEA -> M5Stack display
   Reads JSON Data from NMEA 2000 Wifi Gatway and displays is on the M5Stack module
   Data will be stored in BoatData struct.
-  Version 0.5 / 23.07.2020
+  Version 0.6 / 24.07.2020
 */
 
 
@@ -19,7 +19,10 @@
 
 WiFiMulti WiFiMulti;
 int port = 90; // JSON Server port of NMEA 2000 Gateway
-const char * host = "192.168.15.1"; // Server IP
+const char *host = "192.168.15.1"; // Server IP
+const char *ssid = "MyESP32";   // AP name
+const char *password = "password"; // password
+
 
 WiFiClient client;  // Create TCP client
 
@@ -50,7 +53,7 @@ void setup() {
   Serial.begin(115200); delay(500);
 
   M5.Lcd.setTextSize(2);
-  WiFiMulti.addAP("MyESP32", "password");
+  WiFiMulti.addAP(ssid, password);
 
   M5.Lcd.print("Waiting for WiFi. ");
 
@@ -104,7 +107,7 @@ void Get_JSON_Data(void) {
 
   // Connect to HTTP server
 
-  if (!client.connect("192.168.15.1", 90)) {
+  if (!client.connect(host, port)) {
     Serial.println(F("Connection failed"));
     return;
   }
@@ -191,6 +194,23 @@ void set_system_time(void) {
 
 
 void loop() {
+
+  int wifi_retry = 0;
+
+  while (WiFi.status() != WL_CONNECTED && wifi_retry < 5 ) {
+    wifi_retry++;
+    WiFi.disconnect();
+    WiFi.mode(WIFI_OFF);
+    WiFi.mode(WIFI_STA);
+    Serial.println(F("Reconnect!"));
+    M5.Lcd.println("Reconnect!");
+    WiFiMulti.addAP(ssid, password);
+    delay(100);
+  }
+  if (wifi_retry >= 5) {
+    ESP.restart();
+  }
+  
   M5.update();
 
   if (millis() > t + 1000) {
