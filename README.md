@@ -1,4 +1,4 @@
-# M5Stack-Wifi-NMEA-Display-JSON
+# M5Stack Wifi NMEA Display JSON
 A display for the M5Stack connecting via JSON to the NMEA 2000 WiFi Gateway.
 
 This repository shows how to use the JSON Interface of the NMEA 2000 WiFi Gateway to show data on the display.
